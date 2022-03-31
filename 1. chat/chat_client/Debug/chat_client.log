@@ -1,0 +1,4 @@
+﻿  Client.cpp
+C:\Users\maxjm\Desktop\chat\chat_client\Client.cpp(26,38): warning C4267: аргумент: преобразование из "size_t" в "WORD"; возможна потеря данных
+C:\Users\maxjm\Desktop\chat\chat_client\Client.cpp(129,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+  chat_client.vcxproj -> C:\Users\maxjm\Desktop\chat\chat_client\Debug\chat_client.exe
