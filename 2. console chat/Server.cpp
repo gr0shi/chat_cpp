@@ -1,22 +1,21 @@
 ﻿#include "Server.h"
 
-void showMsg(char* message, int lenght) {
+void show_msg_server(char* message, int lenght) {
   std::cout << "\Client: ";
-  for (int i = 0; i < lenght; i++) std::cout << message[i];
+  for (int i = 0; i < lenght; i++) 
+    std::cout << message[i];
   std::cout << std::endl;
 }
 
-void printError(const char* c, bool critical) {
+void print_error_server(const char* c, bool critical) {
   std::cout << std::endl;
   std::cout << ">----------------- Ошибка ------------------<" << std::endl;
-  std::cout << std::endl;
-  std::cout << "критическая ошибка" << std::endl;
   std::cout << std::endl; 
-  std::cout << c << std::endl;
+  std::cout << " " << c << std::endl;
   std::cout << std::endl;
   std::cout << ">-------------------------------------------<" << std::endl;
   std::cout << std::endl;
-  ;
+
   if (critical) {
     std::cout << "Работа сервера остановлена" << std::endl;
     std::cout << std::endl;
@@ -44,21 +43,20 @@ Server::~Server() {
 int Server::start() {
   iResult = WSAStartup(MAKEWORD(2, 2), &WData);
   if (iResult != 0) {
-    printError("Инициация библиотеки WinSock не удалась", false);
+    print_error_server("Инициация библиотеки WinSock не удалась", true);
     return 1;
   }
 
   iResult = getaddrinfo(NULL, "27015", &hints, &result);
   if (iResult != 0) {
-    printError("Не удалось получить addrinfo", false);
+    print_error_server("Не удалось получить addrinfo", false);
     WSACleanup();
     return 1;
   }
 
-  listenSocket =
-      socket(result->ai_family, result->ai_socktype, result->ai_protocol);
+  listenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
   if (listenSocket == INVALID_SOCKET) {
-    printError("Не удалось создать сокет сокет", false);
+    print_error_server("Не удалось создать сокет", false);
     freeaddrinfo(result);
     WSACleanup();
     return 1;
@@ -66,73 +64,70 @@ int Server::start() {
 
   iResult = bind(listenSocket, result->ai_addr, result->ai_addrlen);
   if (iResult == SOCKET_ERROR) {
-    printError("Не удалось связать сокет", false);
+    print_error_server("Не удалось связать сокет", false);
     freeaddrinfo(result);
     closesocket(listenSocket);
     WSACleanup();
     return 1;
   }
+
   freeaddrinfo(result);
 
-  if (StartListening() == 1) return 1;
+  if (start_listening() == 1) return 1;
 
   return 0;
 }
-int Server::StartListening() {
-  std::cout << "\nОжидание подключиний..." << std::endl;
+int Server::start_listening() {
   std::cout << ">---------------------------------------<" << std::endl;
   std::cout << std::endl;
   std::cout << "Вы являетесь сервером" << std::endl;
   std::cout << std::endl;
   std::cout << "Вызвать меню помощи: -help / -h" << std::endl;
   std::cout << std::endl;
-  std::cout << "Отправьте пустое сообщение чтобы прекратить работу клиента"
-            << std::endl;
-  
+  std::cout << "Отправьте пустое сообщение чтобы прекратить работу клиента" << std::endl;
   std::cout << std::endl;
   std::cout << ">---------------------------------------<" << std::endl;
   std::cout << std::endl;
 
 
   if (listen(listenSocket, SOMAXCONN) == SOCKET_ERROR) {
-    printError("Прослушивание приостановленно.", false);
+    print_error_server("Прослушивание приостановленно.", true);
     closesocket(listenSocket);
     WSACleanup();
     return 1;
   }
 
-  if (handleConn() == 1) return 1;
-
-  std::thread th(&Server::handleConn, this);
-  th.detach();
+  if (handle_connection() == 1) 
+    return 1;
 
   return 0;
 }
 
-int Server::handleConn() {
+int Server::handle_connection() {
   ClientSocket = INVALID_SOCKET;
   ClientSocket = accept(listenSocket, NULL, NULL);
   if (ClientSocket == INVALID_SOCKET) {
-    printError("Неудалось принять данные.", false);
+    print_error_server("Неудалось принять данные.", false);
     closesocket(listenSocket);
     WSACleanup();
     return 1;
   }
 
-  std::thread th(&Server::RecClient, this);
+  std::thread th(&Server::rec_client, this);
   th.detach();
 
   return 0;
 }
 
-int Server::RecClient() {
+int Server::rec_client() {
   char recvbuf[1024];
   do {
     iResult = recv(ClientSocket, recvbuf, 1024, 0);
     if (iResult > 0) {
-      showMsg(recvbuf, iResult);
+      show_msg_server(recvbuf, iResult);
     } else {
-      printError("Пользователь вышел из чата", false);
+      std::cout << std::endl;
+      std::cout << "Пользователь вышел из чата" << std::endl;
       closesocket(ClientSocket);
       WSACleanup();
       return -1;
@@ -142,10 +137,10 @@ int Server::RecClient() {
   return 0;
 }
 
-int Server::sendMessage(char* message) {
+int Server::send_msg_from_server(char* message) {
   iResult = send(ClientSocket, message, strlen(message), 0);
   if (iResult < 0) {
-    printError("Неудалось отправить сообщение", false);
+    print_error_server("Неудалось отправить сообщение", false);
     return -1;
   }
   return 0;

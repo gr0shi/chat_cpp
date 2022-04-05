@@ -3,6 +3,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 #include <iostream>
+#include <ctime>
 #include <list>
 #include <map>
 #include <string>
@@ -14,16 +15,16 @@ class Server {
  public:
   Server();
   ~Server();
-  bool IsConnected() { return conn_stability; }
-  bool StartListening();
-  bool SendMessageToAll(string, string);
-  bool RecClient(SOCKET);
-  void sendTermination();
+  bool is_connected() { return conn_stability; }
+  bool start_listening();
+  bool send_msg_from_server(string, string);
+  bool rec_client(SOCKET);
+  void send_termination();
   void destroy();
 
  private:
   bool conn_stability;
-  list<pair<SOCKET, string>> clientsList;
+  list<pair<SOCKET, string>> clients_list;
   SOCKET receiver;
-  map<string, size_t> cliColors;
+  map<string, size_t> client_colors;
 };

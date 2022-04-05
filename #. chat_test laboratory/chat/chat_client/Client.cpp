@@ -192,6 +192,7 @@ void main() {
 
   DWORD threadId;
   CreateThread(NULL, NULL, MessageRecThread, NULL, NULL, &threadId);
+
   cout << "> ";
   while (gets_s(buf)) {
     if (strlen(buf) == 0) {

@@ -1,1 +1,2 @@
 C:\Users\maxjm\Desktop\chat\chat_server\Debug\chat_server.exe
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\1. chat\chat_server\Debug\chat_server.exe

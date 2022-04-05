@@ -1,12 +1,11 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "Server.h"
 
-#include <algorithm>
+Server server_entity;
 
-Server ServerEntity;
+bool manual_end = false;
 
-bool manualEnd = false;
-
-void printError(string text, bool critical) {
+void print_error(string text, bool critical) {
   cout << endl;
   cout << ">--------------------------- Ошибка ----------------------------<"
        << endl;
@@ -26,24 +25,24 @@ void printError(string text, bool critical) {
   }
 }
 
-void setFontColor(size_t c) {
+void set_font_color(size_t c) {
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   SetConsoleTextAttribute(hConsole, c);
 }
 
-size_t getFontNumber(string text);
-unsigned long __stdcall ServerRecThread(void* pParam);
+size_t get_font_number(string text);
+unsigned long __stdcall server_rec_thread(void* pParam);
 
-bool Server::StartListening() {
-  SOCKET currCliSocket;
+bool Server::start_listening() {
+  SOCKET current_client_socket;
   sockaddr_in incoming;
   int incominglen = sizeof(incoming);
 
-  currCliSocket = accept(receiver, (struct sockaddr*)&incoming, &incominglen);
+  current_client_socket = accept(receiver, (struct sockaddr*)&incoming, &incominglen);
 
   char temp[4096];
   int locStatus;
-  locStatus = recv(currCliSocket, temp, 4096, 0);
+  locStatus = recv(current_client_socket, temp, 4096, 0);
   if (locStatus == -1) {
     // printError("Cannot get user's id", false);
     return false;
@@ -52,20 +51,21 @@ bool Server::StartListening() {
 
   cout << "\b\b";
   string message = "#" + resID + " подключился";
-  setFontColor(12);
+  set_font_color(12);
   cout << message << endl;
-  setFontColor(7);
+  set_font_color(7);
   cout << "> ";
   message = "12$" + message;
-  SendMessageToAll(message, "System");
+  send_msg_from_server(message, "System");
 
-  if (currCliSocket != INVALID_SOCKET) {
-    clientsList.push_back(make_pair(currCliSocket, resID));
-    cliColors.insert(make_pair(resID, getFontNumber(resID)));
+  if (current_client_socket != INVALID_SOCKET) {
+    clients_list.push_back(make_pair(current_client_socket, resID));
+    client_colors.insert(make_pair(resID, get_font_number(resID)));
   }
 
   DWORD threadId;
-  CreateThread(NULL, NULL, ServerRecThread, (void*)currCliSocket, NULL, &threadId);
+  CreateThread(NULL, NULL, server_rec_thread, (void*)current_client_socket, NULL,
+               &threadId);
   return true;
 }
 
@@ -89,17 +89,17 @@ Server::Server() {
   receiver = socket(AF_INET, SOCK_STREAM, 0);
 
   if (receiver == INVALID_SOCKET) {
-    printError("Не удалось установить принимающий сокет", false);
+    print_error("Не удалось установить принимающий сокет", false);
     return;
   }
 
   if (bind(receiver, (sockaddr*)&local, sizeof(local)) != 0) {
-    printError("", false);
+    print_error("Не удалось связать сокет", false);
     return;
   }
 
   if (listen(receiver, 10) != 0) {
-    printError("Не удалось начать прослушивание через сокет", false);
+    print_error("Не удалось начать прослушивание через сокет", false);
     return;
   }
 
@@ -114,13 +114,13 @@ Server::~Server() {
 void Server::destroy() {
   conn_stability = false;
   closesocket(receiver);
-  for (auto it : clientsList) {
+  for (auto it : clients_list) {
     closesocket(it.first);
-    if (!clientsList.size()) break;
+    if (!clients_list.size()) break;
   }
 }
 
-bool Server::SendMessageToAll(string text, string id = "") {
+bool Server::send_msg_from_server(string text, string id = "") {
   int locStatus = 0;
   if (!id.size())
     text = "Server: 9$" + text;
@@ -128,13 +128,13 @@ bool Server::SendMessageToAll(string text, string id = "") {
     text = "System: " + text;
   } else
     text = "#" + id + ": " + text;
-  if (clientsList.size() == 0) return true;
+  if (clients_list.size() == 0) return true;
 
-  for (auto it = clientsList.begin(); it != clientsList.end(); it++) {
+  for (auto it = clients_list.begin(); it != clients_list.end(); it++) {
     if (id != "" && id == it->second) continue;
     locStatus = send(it->first, text.c_str(), text.size() + 1, 0);
     if (locStatus == -1) {
-      clientsList.erase(it);
+      clients_list.erase(it);
     }
   }
 
@@ -142,57 +142,58 @@ bool Server::SendMessageToAll(string text, string id = "") {
   return true;
 }
 
-bool Server::RecClient(SOCKET cliSocket) {
-  if (!conn_stability || manualEnd) return false;
+bool Server::rec_client(SOCKET cliSocket) {
+  if (!conn_stability || manual_end) return false;
   char temp[4096];
   int locStatus;
-  auto it = find_if(clientsList.begin(), clientsList.end(),
+  auto it = find_if(clients_list.begin(), clients_list.end(),
                     [=](const std::pair<SOCKET, string>& element) {
                       return element.first == cliSocket;
                     });
 
   locStatus = recv(cliSocket, temp, 4096, 0);
 
-  if (!conn_stability || manualEnd) return false;
+  if (!conn_stability || manual_end) return false;
   if (locStatus == -1) {
     cout << "\b\b";
     string message = "#" + it->second + " покинул чат";
-    setFontColor(12);
+    set_font_color(12);
     cout << message << endl;
-    setFontColor(7);
+    set_font_color(7);
     cout << "> ";
     message = "12$" + message;
-    clientsList.erase(it);
-    SendMessageToAll(message, "System");
+    clients_list.erase(it);
+    send_msg_from_server(message, "System");
     return false;
   } else {
     string message(temp);
     cout << "\b\b";
-    setFontColor(cliColors[it->second]);
+    set_font_color(client_colors[it->second]);
     cout << "#" << it->second;
-    setFontColor(7);
+    set_font_color(7);
     cout << ": " << message << "\n";
-    message = to_string(cliColors[it->second]) + "$" + message;
-    SendMessageToAll(message, it->second);
+    message = to_string(client_colors[it->second]) + "$" + message;
+    send_msg_from_server(message, it->second);
     cout << "> ";
   }
   return true;
 }
 
-unsigned long __stdcall ServerRecThread(void* pParam) {
-  SOCKET cliSocket = (SOCKET)pParam;
+unsigned long __stdcall server_rec_thread(void* pParam) {
+  SOCKET client_socket = (SOCKET)pParam;
   while (1) {
-    if (!ServerEntity.RecClient(cliSocket)) break;
+    if (!server_entity.rec_client(client_socket)) break;
   }
   return 0;
 }
 
 unsigned long __stdcall ServerListenThread(void* pParam) {
-  while (ServerEntity.StartListening());
+  while (server_entity.start_listening())
+    ;
   return 0;
 }
 
-size_t getFontNumber(string text) {
+size_t get_font_number(string text) {
   hash<string> hash_fn;
   size_t str_hash = hash_fn(text);
   size_t temp = 0;
@@ -209,64 +210,65 @@ size_t getFontNumber(string text) {
   return temp;
 }
 
-void Server::sendTermination() {
+void Server::send_termination() {
   string message = "Сервер остановлен, все подключенные пользователи были выброшены";
   message = "12$" + message;
-  SendMessageToAll(message, "System");
+  send_msg_from_server(message, "System");
   destroy();
 }
 
-void main() {
-  SetConsoleCP(1251);
-  SetConsoleOutputCP(1251);
-
-  if (!ServerEntity.IsConnected()) {
-    printError("Не удалось инициализировать серверный сокет", true);
-    return;
-  }
-
-  char buf[4096];
-
-  cout << ">----------------------------------------------------------<"
-       << endl;
-  cout << endl;
-  cout << "\t\tДобро пожаловать в чат" << endl;
-  cout << "\t\tВы являетесь сервером" << endl;
-  cout << endl;
-  cout << "\tПараметры сервера: \tIP - 127.0.0.1" << endl;
-  cout << "\t\t\t\tПорт - 10007" << endl;
-  cout << endl;
-  cout << "           Вызвать меню помощи: -help / -h" << endl;
-  cout << endl;
-  cout << " Отправьте пустое сообщение чтобы прекратить работу сервера" << endl;
-  cout << endl;
-  cout << ">----------------------------------------------------------<"
-       << endl;
-  cout << endl;
-
-  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-  SetConsoleTextAttribute(hConsole, 7);
-
-  DWORD threadId;
-  CreateThread(NULL, NULL, ServerListenThread, NULL, NULL, &threadId);
-
-  cout << "> ";
-  while (gets_s(buf)) {
-    if (strlen(buf) == 0) {
-      cout << endl;
-      cout << "Вы остановили работу сервера" << endl;
-      manualEnd = true;
-      ServerEntity.sendTermination();
-      break;
-    }
-    if (!ServerEntity.SendMessageToAll(buf)) {
-      printError("Невозможно подключиться к клиентам", false);
-      break;
-    }
-    cout << "> ";
-  }
-
-  cout << "Сервер остановлен" << endl;
-  cout << endl;
-  system("pause");
-}
+//void main() {
+//  SetConsoleCP(1251);
+//  SetConsoleOutputCP(1251);
+//
+//  if (!server_entity.is_connected()) {
+//    print_error("Не удалось инициализировать серверный сокет", true);
+//    return;
+//  }
+//
+//  char buf[4096];
+//
+//  cout << ">----------------------------------------------------------<"
+//       << endl;
+//  cout << endl;
+//  cout << "\t\tДобро пожаловать в чат" << endl;
+//  cout << "\t\tВы являетесь сервером" << endl;
+//  cout << endl;
+//  cout << "\tПараметры сервера: \tIP - 127.0.0.1" << endl;
+//  cout << "\t\t\t\tПорт - 10007" << endl;
+//  cout << endl;
+//  cout << "           Вызвать меню помощи: -help / -h" << endl;
+//  cout << endl;
+//  cout << " Отправьте пустое сообщение чтобы прекратить работу сервера" << endl;
+//  cout << endl;
+//  cout << ">----------------------------------------------------------<"
+//       << endl;
+//  cout << endl;
+//
+//
+//  HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+//  SetConsoleTextAttribute(hConsole, 7);
+//
+//  DWORD threadId;
+//  CreateThread(NULL, NULL, ServerListenThread, NULL, NULL, &threadId);
+//
+//  cout << "> ";
+//  while (gets_s(buf)) {
+//    if (strlen(buf) == 0) {
+//      cout << endl;
+//      cout << "Вы остановили работу сервера" << endl;
+//      manual_end = true;
+//      server_entity.send_termination();
+//      break;
+//    }
+//    if (!server_entity.send_msg_from_server(buf)) {
+//      print_error("Невозможно подключиться к клиентам", false);
+//      break;
+//    }
+//    cout << "> ";
+//  }
+//
+//  cout << "Сервер остановлен" << endl;
+//  cout << endl;
+//  system("pause");
+//}

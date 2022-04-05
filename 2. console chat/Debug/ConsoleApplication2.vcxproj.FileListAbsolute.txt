@@ -1,3 +1,4 @@
 C:\Users\maxjm\source\repos\ConsoleApplication2\Debug\ConsoleApplication2.exe
 C:\Users\maxjm\Desktop\cchat\very-simple-chat-master_vs_withbugs_both!\console chat\Debug\console chat.exe
 C:\Users\maxjm\Desktop\cchat\console chat\Debug\console chat.exe
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\2. console chat\Debug\console chat.exe

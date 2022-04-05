@@ -1,7 +1,7 @@
 #include <iostream>
 #include <ctime>
  
-int main ()
+int getime ()
 {
   time_t now;
   tm *nowtime;

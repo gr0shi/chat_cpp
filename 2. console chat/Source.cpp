@@ -44,12 +44,12 @@ int main() {
       else {
         message = new char[line.length() + 1];
         strcpy(message, line.c_str());
-        server.sendMessage(message);
+        server.send_msg_from_server(message);
       }
     } while (line != "#stop");
   } else if(check == 2) {
     Client client;
-    client.connectToServer();
+    client.connect_to_server();
 
     do {
       //	std::cout << "\nClient: ";
@@ -59,7 +59,7 @@ int main() {
       else {
         message = new char[line.length() + 1];
         strcpy(message, line.c_str());
-        client.SendMsg(message);
+        client.send_msg(message);
       }
     } while (line != "#exit");
   } /*else if (check == "-h" ||) {*/

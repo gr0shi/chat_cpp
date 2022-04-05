@@ -1,9 +1,9 @@
 ﻿#define _WINSOCK_DEPRECATED_NO_WARNINGS
 #include "Client.h"
 
-Client ClientEntity;
+Client client_entity;
 
-void printError(string text, bool critical) {
+void print_error(string text, bool critical) {
   cout << endl;
   cout << ">--------------------------- Ошибка ----------------------------<" << endl;
   cout << endl;
@@ -21,60 +21,68 @@ void printError(string text, bool critical) {
   }
 }
 
-void setFontColor(size_t c) {
+void set_font_color(size_t c) {
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   SetConsoleTextAttribute(hConsole, c);
 }
 
-unsigned long __stdcall MessageRecThread(void* pParam);
+unsigned long __stdcall MessageRecThread(void* pParam) {
+  do {
+    if (!client_entity.receive_msg()) {
+      cout << "\b\b" << endl;
+      break;
+    }
+  } while (client_entity.is_connected());
+  return 0;
+}
 
 Client::Client() : conn_stability(false) {
   cout << "Client Started." << endl;
   cout << endl;
 }
 
-void Client::ConnectToServer(string address, int port, string locID) {
-  serverIP = address;
-  serverPort = port;
+void Client::connect_to_server(string address, int port, string locID) {
+  server_IP = address;
+  server_port = port;
 
-  struct hostent* hostInfo;
+  struct hostent* host_info;
   unsigned int addr;
   struct sockaddr_in server;
 
   WSADATA wsaData;
 
   if (WSAStartup(0x101, &wsaData) != 0) {
-    printError("Инициация библиотеки WinSock не удалась", false);
+    print_error("Инициация библиотеки WinSock не удалась", false);
     return;
   }
 
   connection = socket(AF_INET, SOCK_STREAM, 0);
 
   if (connection == INVALID_SOCKET) {
-    printError("Неправильный сокет", false);
+    print_error("Неправильный сокет", false);
     return;
   }
 
-  addr = inet_addr(serverIP.c_str());
+  addr = inet_addr(server_IP.c_str());
 
-  hostInfo = gethostbyaddr((char*)&addr, sizeof(addr), AF_INET);
+  host_info = gethostbyaddr((char*)&addr, sizeof(addr), AF_INET);
 
-  if (hostInfo == NULL) {
-    printError("Не удалось получить информацию о сервере", false);
+  if (host_info == NULL) {
+    print_error("Не удалось получить информацию о сервере", false);
     closesocket(connection);
     return;
   }
 
-  server.sin_addr.s_addr = *((unsigned long*)hostInfo->h_addr);
+  server.sin_addr.s_addr = *((unsigned long*)host_info->h_addr);
   server.sin_family = AF_INET;
-  server.sin_port = htons(serverPort);
+  server.sin_port = htons(server_port);
 
   if (connect(connection, (struct sockaddr*)&server, sizeof(server))) {
-    printError("Не удается установить соединение с сервером", false);
+    print_error("Не удается установить соединение с сервером", false);
     closesocket(connection);
     return;
   }
-  SendMsg(locID);
+  send_msg(locID);
   conn_stability = true;
 }
 
@@ -83,13 +91,13 @@ Client::~Client() {
     closesocket(connection);
 }
 
-bool Client::SendMsg(string text) {
+bool Client::send_msg(string text) {
   if (send(connection, text.c_str(), text.size() + 1, 0) == -1) 
     return false;
   return true;
 }
 
-bool Client::ReceiveMsg() {
+bool Client::receive_msg() {
   char message[4096];
   if (recv(connection, message, 4096, 0) == -1) 
     return false;
@@ -103,22 +111,12 @@ bool Client::ReceiveMsg() {
   string name = msg.substr(0, pos2);
   string text = msg.substr(pos1 + 1);
 
-  setFontColor(fontNum);
+  set_font_color(fontNum);
   cout << name;
-  setFontColor(7);
+  set_font_color(7);
   cout << ": " << text << endl;
   cout << "> ";
   return true;
-}
-
-unsigned long __stdcall MessageRecThread(void* pParam) {
-  do {
-    if (!ClientEntity.ReceiveMsg()) {
-      cout << "\b\b" << endl;
-      break;
-    }
-  } while (ClientEntity.IsConnected());
-  return 0;
 }
 
 void Client::destroy() {
@@ -133,28 +131,30 @@ void main() {
   FILE* file;
   fopen_s(&file, "server.ini", "r");
   if (file == NULL) {
-    printError("Неудалось открыть server.ini", true);
+    print_error("Неудалось открыть server.ini", true);
     return;
   }
 
   char buf[4096];
-  string serverAddress;
+  string server_address;
+
   while ((fgets(buf, 4096, file)) != NULL) {
     if (buf[0] == '#') continue;
-    serverAddress = buf;
+    server_address = buf;
   }
   fclose(file);
 
-  if (serverAddress.size() == 0) {
-    printError("В server.ini нет IP адреса", true);
+  if (server_address.size() == 0) {
+    print_error("В server.ini нет IP адреса", true);
     return;
   }
+
   cout << ">----------------------------------------------------------<" << endl;
   cout << endl;
   cout << "\t\tДобро пожаловать в чат" << endl;
   cout << "\t\tВы являетесь клиентом" << endl;
   cout << endl;
-  cout << "\tПараметры сервера: \tIP - " << serverAddress << endl;
+  cout << "\tПараметры сервера: \tIP - " << server_address << endl;
   cout << "\t\t\t\tПорт - 10007" << endl;
   cout << endl;
   cout << "           Вызвать меню помощи: -help / -h" << endl;
@@ -171,15 +171,16 @@ void main() {
   system("cls");
 
   cin.ignore();
-  ClientEntity.ConnectToServer(serverAddress.c_str(), 10007, locID);
-  if (!ClientEntity.IsConnected()) {
-    printError("Неудалось подключиться к IP адресу, привязанному к server.ini", true);
+  client_entity.connect_to_server(server_address.c_str(), 10007, locID);
+
+  if (!client_entity.is_connected()) {
+    print_error("Неудалось подключиться к IP адресу, привязанному к server.ini", true);
     return;
   }
 
   cout << ">----------------------------------------------------------<" << endl;
   cout << endl;
-  cout << "\tПараметры сервера: \tIP - " << serverAddress << endl;
+  cout << "\tПараметры сервера: \tIP - " << server_address << endl;
   cout << "\t\t\t\tПорт - 10007" << endl;
   cout << "\t\t\t\tВаше имя - " << locID << endl;
   cout << endl;
@@ -192,16 +193,17 @@ void main() {
 
   DWORD threadId;
   CreateThread(NULL, NULL, MessageRecThread, NULL, NULL, &threadId);
+
   cout << "> ";
   while (gets_s(buf)) {
     if (strlen(buf) == 0) {
       cout << endl;
       cout << "Вы остановили работу клиента" << endl;
-      ClientEntity.destroy();
+      client_entity.destroy();
       break;
     }
-    if (!ClientEntity.SendMsg(buf)) {
-      printError("Неудалось подключиться. Проверьте, запущен ли сервер", false);
+    if (!client_entity.send_msg(buf)) {
+      print_error("Неудалось подключиться. Проверьте, запущен ли сервер", false);
       break;
     }
     cout << "> ";

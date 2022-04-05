@@ -12,15 +12,15 @@ class Client {
  public:
   Client();
   ~Client();
-  void ConnectToServer(string, int, string);
-  bool SendMsg(string);
-  bool ReceiveMsg();
-  bool IsConnected() { return conn_stability; }
+  void connect_to_server(string, int, string);
+  bool send_msg(string);
+  bool receive_msg();
+  bool is_connected() { return conn_stability; }
   void destroy();
 
  private:
   bool conn_stability;
-  string serverIP;
-  int serverPort;
+  string server_IP;
+  int server_port;
   SOCKET connection;
 };

@@ -1,4 +1,12 @@
 ﻿  Server.cpp
-C:\Users\maxjm\Desktop\chat\chat_server\Server.cpp(29,38): warning C4267: аргумент: преобразование из "size_t" в "WORD"; возможна потеря данных
-C:\Users\maxjm\Desktop\chat\chat_server\Server.cpp(219,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
-  chat_server.vcxproj -> C:\Users\maxjm\Desktop\chat\chat_server\Debug\chat_server.exe
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\Server.cpp(30,38): warning C4267: аргумент: преобразование из "size_t" в "WORD"; возможна потеря данных
+  chat_server.cpp
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(3,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(7,8): error C2065: server_entity: необъявленный идентификатор
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(8,5): error C3861: print_error: идентификатор не найден
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(35,28): error C2065: ServerListenThread: необъявленный идентификатор
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(42,7): error C2065: manual_end: необъявленный идентификатор
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(43,7): error C2065: server_entity: необъявленный идентификатор
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(46,10): error C2065: server_entity: необъявленный идентификатор
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\#. chat_test laboratory\chat\chat_server\chat_server.cpp(47,7): error C3861: print_error: идентификатор не найден
+  Создание кода...
