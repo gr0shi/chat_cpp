@@ -13,10 +13,10 @@ class Server {
   ~Server();
   int start();
   void destroy();
-  int StartListening();
-  int handleConn();
-  int RecClient();
-  int sendMessage(char* message);
+  int start_listening();
+  int handle_connection();
+  int rec_client();
+  int send_msg_from_server(char* message);
 
  private: 
   WSADATA WData;

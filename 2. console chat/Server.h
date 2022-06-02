@@ -20,7 +20,9 @@ class Server {
 
  private: 
   WSADATA WData;
-  struct addrinfo *result = NULL, *ptr = NULL, hints;
+  struct addrinfo *result = NULL,
+                  *ptr = NULL,
+                  hints;
   SOCKET listenSocket = INVALID_SOCKET;
   SOCKET ClientSocket;
   int iResult;

@@ -3,23 +3,50 @@
 
 Server server_entity;
 
+int countus = 0;
+
 bool manual_end = false;
+
+const std::string currentTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%X", &tstruct);
+
+    return buf;
+}
+
+int listofusers(string resID, int countus) {
+  string path = "list.txt";
+  ofstream fout;
+  fopen("list.txt", "w");
+  fout.open(path, ofstream::app);
+
+  if (!fout.is_open())
+    cout << "Не получается открыть файл!" << endl;
+
+  else
+    fout << countus << ". " << resID << " - " << currentTime() << endl;
+
+  fout.close();
+
+  return 0;
+}
 
 void print_error(string text, bool critical) {
   cout << endl;
-  cout << ">--------------------------- Ошибка ----------------------------<"
-       << endl;
-  cout << endl;
-  cout << boolalpha << "\t\t\tОписание ошибки:" << endl;
-  cout << endl;
+  cout << ">--------------------------- Ошибка ----------------------------<" << endl;
+  cout << "                                                                 " << endl;
+  cout << "                        Описание ошибки:                         " << endl;
+  cout << "                                                                 " << endl;
   cout << " " << text << endl;
-  cout << endl;
-  cout << ">---------------------------------------------------------------<"
-       << endl;
+  cout << "                                                                 " << endl;
+  cout << ">---------------------------------------------------------------<" << endl;
   cout << endl;
 
   if (critical) {
-    cout << "Работа сервера остановлена" << endl;
+    cout << "Работа приложения остановлена" << endl;
     cout << endl;
     system("pause");
   }
@@ -76,7 +103,11 @@ bool Server::start_listening() {
   string resID(temp);
 
   cout << "\b\b";
-  string message = "#" + resID + " подключился";
+  string message = currentTime() + " " + "#" + resID + " подключился";
+  countus++;
+  set_font_color(11);
+  cout << "Количество пользователей: " << countus << endl;
+  listofusers(resID, countus);
   set_font_color(12);
   cout << message << endl;
   set_font_color(7);
@@ -131,6 +162,10 @@ Server::Server() {
   conn_stability = true;
 }
 
+Server::Server(const u_short port) {
+  // this->port = port;
+}
+
 Server::~Server() {
   closesocket(receiver);
   WSACleanup();
@@ -149,12 +184,12 @@ bool Server::send_msg_from_server(string text, string id = "") {
   int locStatus = 0;
 
   if (!id.size())
-    text = "Server: 9$" + text;
+    text = currentTime() + " " + "Server: 9$" + text;
 
   else if (id == "System") {
     text = "System: " + text;
   } else
-    text = "#" + id + ": " + text;
+    text = currentTime() + " " + "#" + id + ": " + text;
 
   if (clients_list.size() == 0) return true;
 
@@ -188,7 +223,10 @@ bool Server::rec_client(SOCKET cliSocket) {
   if (locStatus == -1) {
     cout << "\b\b";
 
-    string message = "#" + it->second + " покинул чат";
+    string message = currentTime() + " " + "#" + it->second + " покинул чат";
+    countus--;
+    set_font_color(11);
+    cout << "Количество пользователей: " << countus << endl;
     set_font_color(12);
     cout << message << endl;
     set_font_color(7);
@@ -204,7 +242,7 @@ bool Server::rec_client(SOCKET cliSocket) {
     cout << "\b\b";
 
     set_font_color(client_colors[it->second]);
-    cout << "#" << it->second;
+    cout << currentTime() << " " << "#" << it->second;
     set_font_color(7);
     cout << ": " << message << endl;
     message = to_string(client_colors[it->second]) + "$" + message;
@@ -232,22 +270,18 @@ void main() {
 
   char buf[4096];
 
-  cout << ">----------------------------------------------------------<"
-       << endl;
-  cout << endl;
-  cout << "\t\tДобро пожаловать в чат" << endl;
-  cout << "\t\tВы являетесь сервером" << endl;
-  cout << endl;
-  cout << "\tПараметры сервера: \tIP - 127.0.0.1" << endl;
-  cout << "\t\t\t\tПорт - 10007" << endl;
-  cout << endl;
-  cout << "           Вызвать меню помощи: -help / -h" << endl;
-  cout << endl;
-  cout << " Отправьте пустое сообщение чтобы прекратить работу сервера" << endl;
-  cout << endl;
-  cout << ">----------------------------------------------------------<"
-       << endl;
-  cout << endl;
+  cout << ">---------------------------------------------------------------<" << endl;
+  cout << "                                                                 " << endl;
+  cout << "                    Добро пожаловать в чат                       " << endl;
+  cout << "                    Вы являетесь сервером                        " << endl;
+  cout << "                                                                 " << endl;
+  cout << "         Параметры сервера:          IP - 127.0.0.1              " << endl;
+  cout << "                                     Порт - 10007                " << endl;
+  cout << "                                                                 " << endl;
+  cout << "   Отправьте пустое сообщение чтобы прекратить работу сервера    " << endl;
+  cout << "                                                                 " << endl;
+  cout << ">---------------------------------------------------------------<" << endl;
+  cout << "                                                                 " << endl;
 
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   SetConsoleTextAttribute(hConsole, 7);

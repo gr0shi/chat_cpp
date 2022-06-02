@@ -11,10 +11,10 @@ class Client {
  public:
   Client();
   ~Client();
-  int connectToServer();
+  int connect_to_server();
   void destroy();
-  int SendMsg(char* message);
-  int ReceiveMsg();
+  int send_msg(char* message);
+  int receive_msg();
 
   private:
   WSADATA WData;

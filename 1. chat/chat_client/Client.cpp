@@ -1,21 +1,34 @@
 ﻿#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#define _CRT_SECURE_NO_WARNINGS
 #include "Client.h"
 
 Client client_entity;
 
+int countus = 0;
+
+const std::string currentTime() {
+  time_t now = time(0);
+  struct tm tstruct;
+  char buf[80];
+  tstruct = *localtime(&now);
+  strftime(buf, sizeof(buf), "%X", &tstruct);
+
+  return buf;
+}
+
 void print_error(string text, bool critical) {
   cout << endl;
   cout << ">--------------------------- Ошибка ----------------------------<" << endl;
-  cout << endl;
-  cout << boolalpha << "\t\t\tОписание ошибки:" << endl;
-  cout << endl;
+  cout << "                                                                 " << endl;
+  cout << "                        Описание ошибки:                         " << endl;
+  cout << "                                                                 " << endl;
   cout << " " << text << endl;
-  cout << endl;
+  cout << "                                                                 " << endl;
   cout << ">---------------------------------------------------------------<" << endl;
   cout << endl;
-  ;
+
   if (critical) {
-    cout << "Работа клиента остановлена" << endl;
+    cout << "Работа приложения остановлена" << endl;
     cout << endl;
     system("pause");
   }
@@ -149,20 +162,18 @@ void main() {
     return;
   }
 
-  cout << ">----------------------------------------------------------<" << endl;
-  cout << endl;
-  cout << "\t\tДобро пожаловать в чат" << endl;
-  cout << "\t\tВы являетесь клиентом" << endl;
-  cout << endl;
-  cout << "\tПараметры сервера: \tIP - " << server_address << endl;
-  cout << "\t\t\t\tПорт - 10007" << endl;
-  cout << endl;
-  cout << "           Вызвать меню помощи: -help / -h" << endl;
-  cout << endl;
-  cout << " Отправьте пустое сообщение чтобы прекратить работу клиента" << endl;
-  cout << endl;
-  cout << ">----------------------------------------------------------<" << endl;
-  cout << endl;
+  cout << ">---------------------------------------------------------------<" << endl;
+  cout << "                                                                 " << endl;
+  cout << "                    Добро пожаловать в чат                       " << endl;
+  cout << "                    Вы являетесь клиентом                        " << endl;
+  cout << "                                                                 " << endl;
+  cout << "         Параметры сервера:          IP - " << server_address      << endl;
+  cout << "                                     Порт - 10007                " << endl;
+  cout << "                                                                 " << endl;
+  cout << "   Отправьте пустое сообщение чтобы прекратить работу сервера    " << endl;
+  cout << "                                                                 " << endl;
+  cout << ">---------------------------------------------------------------<" << endl;
+  cout << "                                                                 " << endl;
   cout << "Введите имя пользователя: ";
 
   string locID;
@@ -178,18 +189,19 @@ void main() {
     return;
   }
 
-  cout << ">----------------------------------------------------------<" << endl;
-  cout << endl;
-  cout << "\tПараметры сервера: \tIP - " << server_address << endl;
-  cout << "\t\t\t\tПорт - 10007" << endl;
-  cout << "\t\t\t\tВаше имя - " << locID << endl;
-  cout << endl;
-  cout << "           Вызвать меню помощи: -help / -h" << endl;
-  cout << endl;
-  cout << " Отправьте пустое сообщение чтобы прекратить работу клиента" << endl;
-  cout << endl;
-  cout << ">----------------------------------------------------------<" << endl;
-  cout << endl;
+  cout << ">---------------------------------------------------------------<" << endl;
+  cout << "                                                                 " << endl;
+  cout << "                    Добро пожаловать в чат                       " << endl;
+  cout << "                    Вы являетесь клиентом                        " << endl;
+  cout << "                                                                 " << endl;
+  cout << "         Параметры сервера:          IP - " << server_address      << endl;
+  cout << "                                     Порт - 10007                " << endl;
+  cout << "                                     Ваше имя - " << locID         << endl;
+  cout << "                                                                 " << endl;
+  cout << "   Отправьте пустое сообщение чтобы прекратить работу сервера    " << endl;
+  cout << "                                                                 " << endl;
+  cout << ">---------------------------------------------------------------<" << endl;
+  cout << "                                                                 " << endl;
 
   DWORD threadId;
   CreateThread(NULL, NULL, MessageRecThread, NULL, NULL, &threadId);

@@ -1,0 +1,8 @@
+﻿  Client.cpp
+  inc.cpp
+C:\Users\maxjm\source\repos\chat\inc.cpp(23,38): warning C4267: аргумент: преобразование из "size_t" в "WORD"; возможна потеря данных
+C:\Users\maxjm\source\repos\chat\inc.cpp(34,10): error C2065: server: необъявленный идентификатор
+  Server.cpp
+C:\Users\maxjm\source\repos\chat\Server.cpp(46,28): error C2065: rec_thread: необъявленный идентификатор
+  source.cpp
+  Создание кода...
