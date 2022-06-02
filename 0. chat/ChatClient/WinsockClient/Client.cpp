@@ -59,7 +59,7 @@ Client::Client(int argc, char **argv, int PORT)
 
 	// подтверждение параметров
 	if (argc != 2) {
-		print_error("Ќужно указать порт", false);
+		print_error("Ќужно указать IP-адрес", false);
 	}
 
 	// инициальзаци€ библиотеки WinSock

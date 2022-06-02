@@ -58,8 +58,6 @@ void print_error(std::string text, bool critical) {
   }
 }
 
-
-
 Server::Server(int PORT)
 {
 	WSADATA wsaData;

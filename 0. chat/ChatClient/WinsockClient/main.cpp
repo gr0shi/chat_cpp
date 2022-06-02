@@ -45,30 +45,30 @@ int main(int argc, char **argv)
 	}
 
 	std::cout << ">---------------------------------------------------------------<" << std::endl;
-  std::cout << "                                                                 " << std::endl;
-  std::cout << "                    Добро пожаловать в чат                       " << std::endl;
-  std::cout << "                    Вы являетесь клиентом                        " << std::endl;
-  std::cout << "                                                                 " << std::endl;
-  std::cout << "         Параметры сервера:          IP - 127.0.0.1              " << std::endl;
-  std::cout << "                                     Порт - 27015                " << std::endl;
-  std::cout << "                                                                 " << std::endl;
-  std::cout << ">---------------------------------------------------------------<" << std::endl;
-  std::cout << "                                                                 " << std::endl;
-	
+	std::cout << "                                                                 " << std::endl;
+	std::cout << "                    Добро пожаловать в чат                       " << std::endl;
+	std::cout << "                    Вы являетесь клиентом                        " << std::endl;
+	std::cout << "                                                                 " << std::endl;
+	std::cout << "         Параметры сервера:          IP - " << argv[1]             << std::endl;
+	std::cout << "                                     Порт - " << DEFAULT_PORT      << std::endl;
+	std::cout << "                                                                 " << std::endl;
+	std::cout << ">---------------------------------------------------------------<" << std::endl;
+	std::cout << "                                                                 " << std::endl;
+
 	SecureUsername();
 
 	system("cls");
 
 	std::cout << ">---------------------------------------------------------------<" << std::endl;
-  std::cout << "                                                                 " << std::endl;
-  std::cout << "                    Вы являетесь клиентом                        " << std::endl;
-  std::cout << "                                                                 " << std::endl;
-  std::cout << "         Параметры сервера:          IP - 127.0.0.1              " << std::endl;
-  std::cout << "                                     Порт - 27015                " << std::endl;
+	std::cout << "                                                                 " << std::endl;
+	std::cout << "                    Вы являетесь клиентом                        " << std::endl;
+	std::cout << "                                                                 " << std::endl;
+	std::cout << "         Параметры сервера:          IP - " << argv[1]             << std::endl;
+	std::cout << "                                     Порт - " << DEFAULT_PORT      << std::endl;
 	std::cout << "                                     Ваше имя - " << username      << std::endl;
-  std::cout << "                                                                 " << std::endl;
-  std::cout << ">---------------------------------------------------------------<" << std::endl;
-  std::cout << "                                                                 " << std::endl;
+	std::cout << "                                                                 " << std::endl;
+	std::cout << ">---------------------------------------------------------------<" << std::endl;
+	std::cout << "                                                                 " << std::endl;
 
 	myClient->StartSubRoutine();
 

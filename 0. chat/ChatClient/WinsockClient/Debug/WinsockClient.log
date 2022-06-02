@@ -1,5 +1,3 @@
 ﻿  Client.cpp
 C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\0. chat\ChatClient\WinsockClient\Client.cpp(17,38): warning C4267: аргумент: преобразование из "size_t" в "WORD"; возможна потеря данных
-  main.cpp
-  Создание кода...
   WinsockClient.vcxproj -> C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\0. chat\ChatClient\Debug\Client.exe
