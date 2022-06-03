@@ -32,6 +32,10 @@ int main(void)
   std::cout << "                                                                 " << std::endl;
   std::cout << "         ѕараметры сервера:          ѕорт - " << DEFAULT_PORT      << std::endl;
   std::cout << "                                                                 " << std::endl;
+  std::cout << "    ” вас есть возможность посмотреть количество пользователей,  " << std::endl;
+  std::cout << "      их имена, какое ID они используют, и врем€ подключени€     " << std::endl;
+  std::cout << "           в текстовом документе под названием list.txt          " << std::endl;
+  std::cout << "                                                                 " << std::endl;
   std::cout << ">---------------------------------------------------------------<" << std::endl;
   std::cout << "                                                                 " << std::endl;
 
