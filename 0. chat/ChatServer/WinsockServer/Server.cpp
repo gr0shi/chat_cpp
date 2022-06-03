@@ -250,7 +250,7 @@ bool Server::ProcessPacket(int index, PACKET packetType)
 		{
 			if (i == index)
 				continue;
-			//добавляет пользователя для написания сообщения
+			//добавляет пользователя и написанное сообщение
 
 			std::string newMessage = currentTime() + " | " + usernames[index]+ ": " + message;
 			if (!SendString(i, newMessage)) {
@@ -323,7 +323,7 @@ bool Server::ProcessPacket(int index, PACKET packetType)
 	}
 
 	default:
-		std::cout << currentTime() << " | " << "Нераспознанный покет: " << packetType << std::endl;
+		std::cout << currentTime() << " | " << "Нераспознанный пакет: " << packetType << std::endl;
 		break;
 	}
 	return true;

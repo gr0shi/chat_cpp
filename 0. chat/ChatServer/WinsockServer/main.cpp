@@ -30,8 +30,7 @@ int main(void)
   std::cout << "                    Добро пожаловать в чат                       " << std::endl;
   std::cout << "                    Вы являетесь сервером                        " << std::endl;
   std::cout << "                                                                 " << std::endl;
-  std::cout << "         Параметры сервера:          IP - 127.0.0.1              " << std::endl;
-  std::cout << "                                     Порт - 27015                " << std::endl;
+  std::cout << "         Параметры сервера:          Порт - " << DEFAULT_PORT      << std::endl;
   std::cout << "                                                                 " << std::endl;
   std::cout << ">---------------------------------------------------------------<" << std::endl;
   std::cout << "                                                                 " << std::endl;
