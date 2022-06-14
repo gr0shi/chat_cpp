@@ -10,14 +10,12 @@ Client* myClient;
 
 std::string username;
 
-void SecureUsername()
-{
+void SecureUsername() { // отвечает за введение имени пользователя
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
 
 	bool usernameAccepted = false;
-	do
-	{
+	do {
 		std::cout << "Введите имя пользователя: " << std::endl;
 
 		std::getline(std::cin, username);
@@ -29,17 +27,17 @@ void SecureUsername()
 			std::cout << "Имя пользователя уже занято, попробуйте снова." << std::endl;
 
 	} while (!usernameAccepted);
+
+	system("cls");
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
 	SetConsoleCP(1251);
   SetConsoleOutputCP(1251);
 
 	myClient = new Client(argc, argv, DEFAULT_PORT);
 
-	if (!myClient->Connect())
-	{
+	if (!myClient->Connect()) {
 		system("pause");
 		return 1;
 	}
@@ -57,8 +55,6 @@ int main(int argc, char **argv)
 
 	SecureUsername();
 
-	system("cls");
-
 	std::cout << ">---------------------------------------------------------------<" << std::endl;
 	std::cout << "                                                                 " << std::endl;
 	std::cout << "                    Вы являетесь клиентом                        " << std::endl;
@@ -74,18 +70,16 @@ int main(int argc, char **argv)
 
 	//Отправка и получение сообщений
 	std::string buffer;
-	while (true)
-	{
+	while (true) {
 		std::getline(std::cin, buffer); // берет символы, введенные в консоли
 
-		if (buffer[0] == '@')
-		{
+		if (buffer[0] == '@') {
 			buffer.erase(0, 1);
 			if (!myClient->SendDirectMessage(buffer))
 				break;
     } 
-		else
-		{
+
+		else {
 			if (!myClient->SendString(buffer))
 				break; 
 		}

@@ -2,7 +2,7 @@
 
 bool status = true;
 
-const std::string currentTime() {
+const std::string CurrentTime() { // показывает текущее время
   time_t now = time(0);
   struct tm tstruct;
   char buf[80];
@@ -12,13 +12,13 @@ const std::string currentTime() {
   return buf;
 }
 
-void set_font_color(size_t c) {
+void SetFontColor(size_t c) { // меняет цвет отображения текста
   HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   SetConsoleTextAttribute(hConsole, c);
 }
 
-void print_error(std::string text, bool critical) {
-	set_font_color(8);
+void PrintError(std::string text, bool critical) { // печатает ошибку если таковая имеется
+	SetFontColor(8);
   std::cout << std::endl;
   std::cout << ">--------------------------- Ошибка ----------------------------<" << std::endl;
   std::cout << "                                                                 " << std::endl;
@@ -36,7 +36,7 @@ void print_error(std::string text, bool critical) {
   }
 }
 
-int cleanuplist(bool status) {
+int CleanupList(bool status) { // очищает файл list.txt при потере соединения с сервером
 	std::string path("..\\..\\list.txt");
 	std::ofstream fout;
 	fout.open(path, std::ofstream::app);
@@ -53,19 +53,18 @@ int cleanuplist(bool status) {
 	return 0;
 }
 
-Client::Client(int argc, char **argv, int PORT)
-{
+Client::Client(int argc, char **argv, int PORT) {
 	WSADATA wsaData;
 
 	// подтверждение параметров
 	if (argc != 2) {
-		print_error("Нужно указать IP-адрес", false);
+		PrintError("Нужно указать IP-адрес", false);
 	}
 
 	// инициальзация библиотеки WinSock
 	iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
-		print_error("Инициация библиотеки WinSock не удалась", false);
+		PrintError("Инициация библиотеки WinSock не удалась", false);
 		exit(0);
 	}
 
@@ -77,41 +76,35 @@ Client::Client(int argc, char **argv, int PORT)
 	// проверка адреса сервера и порта
 	iResult = getaddrinfo(argv[1], std::to_string(PORT).c_str(), &hints, &result);
 	if (iResult != 0) {
-		print_error("Не удалось получить информацию о сервере", false);
+		PrintError("Не удалось получить информацию о сервере", false);
 		WSACleanup();
 	}
 
 	clientPtr = this;
 }
 
-bool Client::Connect()
-{
+bool Client::Connect() { // осуществляет подключение к серверу
 	bool connected = false;
 
 	// пытается подключиться к адресу, пока не удастся
-	for (ptr = result; ptr != NULL; ptr = ptr->ai_next)
-	{
-
+	for (ptr = result; ptr != NULL; ptr = ptr->ai_next) {
 		// создайте сокет для подключения к серверу
-		ServerConnection = socket(ptr->ai_family, ptr->ai_socktype,
-			ptr->ai_protocol);
+		ServerConnection = socket(ptr->ai_family, ptr->ai_socktype, ptr->ai_protocol);
 		if (ServerConnection == INVALID_SOCKET) {
-			print_error("Неправильный сокет", false);
+			PrintError("Неправильный сокет", false);
 			WSACleanup();
 			return false;
 		}
 
 		// подключение к серверу
 		iResult = connect(ServerConnection, ptr->ai_addr, (int)ptr->ai_addrlen);
-		if (iResult == SOCKET_ERROR)
-		{
-			print_error("Не удается установить соединение с сервером", false);
+		if (iResult == SOCKET_ERROR) {
+			PrintError("Не удается установить соединение с сервером", false);
 			closesocket(ServerConnection);
 			ServerConnection = INVALID_SOCKET;
 			continue;
 		}
-		else
-		{
+		else {
 			connected = true;
 			break;
 
@@ -121,58 +114,50 @@ bool Client::Connect()
 	return connected;
 }
 
-bool Client::ProcessPacket(PACKET packetType)
-{
-	switch (packetType)
-	{
-	case P_ChatMessage:
-	{
-		std::string message;
-		if (!GetString(message))
-			return false;
-		std::cout << message << std::endl;
-		break;
-	}
+bool Client::ProcessPacket(PACKET packetType) { // обрабатывает пакеты данных
+	switch (packetType) {
+		case P_ChatMessage: {
+			std::string message;
+			if (!GetString(message))
+				return false;
+			std::cout << message << std::endl;
+			break;
+		}
 
-	case P_DirectMessage:
-	{
-		bool value;
-		if (!GetBool(value))
-		DM_Failed = value;
-		break;
-	}
-	default:
-		print_error("Нераспознанный пакет", false);
+		case P_DirectMessage: {
+			bool value;
+			if (!GetBool(value))
+				DM_Failed = value;
+			break;
+		}
+
+		default:
+			PrintError("Нераспознанный пакет", false);
 	}
 	return true;
 }
 
-void Client::ClientHandler()
-{
+void Client::ClientHandler() { // обрабатывает клиентов
 	PACKET packetType;
-	while (true)
-	{
-		//get type
+	while (true) {
+		//получает тип пакета
 		if (!clientPtr->GetPacketType(packetType))
 			break;
-		//procees package type
+		//обрабатывает тип пакета
 		if (!clientPtr->ProcessPacket(packetType))
 			break;
 	}
 
 	//Потеряно соединение или произошла ошибка
-
-	print_error("Потеряно соединенние с сервером", false);
-	if (clientPtr->CloseConnection())
-	{
-		print_error("Сокет успешно закрыт", false);
+	PrintError("Потеряно соединенние с сервером", false);
+	if (clientPtr->CloseConnection()) {
+		PrintError("Сокет успешно закрыт", false);
 		status = false;
-		cleanuplist(status);
+		CleanupList(status);
 	}
 }
 
-bool Client::SendString(const std::string& value)
-{
+bool Client::SendString(const std::string& value) { // отправляет строки для обработки
 	if (!SendPacketType(P_ChatMessage))
 		return false;
 
@@ -187,8 +172,7 @@ bool Client::SendString(const std::string& value)
 	return true;
 }
 
-bool Client::SendDirectMessage(const std::string& value)
-{
+bool Client::SendDirectMessage(const std::string& value) { // отвечает за отправку личных сообщений пользователям
 	if (!SendPacketType(P_DirectMessage))
 		return false;
 
@@ -204,45 +188,44 @@ bool Client::SendDirectMessage(const std::string& value)
 	return true;
 }
 
-bool Client::SendInt(const int& value) const
-{
+bool Client::SendInt(const int& value) const { // отправляет целочисленные значения для обработки
 	int returnCheck = send(ServerConnection, (char*)&value, sizeof(int), NULL);
 	if (returnCheck == SOCKET_ERROR)
 		return false;
 
 	return true;
 }
-bool Client::GetInt(int& value)
-{
+
+bool Client::GetInt(int& value) { // получает целочисленные значения для обработки
 	int returnCheck = recv(ServerConnection, (char*)& value, sizeof(int), NULL);
 	if (returnCheck == SOCKET_ERROR)
 		return false;
 
 	return true;
 }
-bool Client::SendPacketType(const PACKET& packetType)
-{
+
+bool Client::SendPacketType(const PACKET& packetType) { // отправляет тип пакета данных для обработки
 	int returnCheck = send(ServerConnection, (char*)& packetType, sizeof(PACKET), NULL);
 	if (returnCheck == SOCKET_ERROR)
 		return false;
 
 	return true;
 }
-bool Client::GetPacketType(PACKET& packetType)
-{
+
+bool Client::GetPacketType(PACKET& packetType) { // получает тип пакета данных для обработки
 	int returnCheck = recv(ServerConnection, (char*)& packetType, sizeof(PACKET), NULL);
 	if (returnCheck == SOCKET_ERROR)
 		return false;
 
 	return true;
 }
-bool Client::GetString(std::string& value)
-{
+
+bool Client::GetString(std::string& value) { // получает строки для обработки
 	int bufferLength = 0;
 	if (!GetInt(bufferLength))
 		return false;
 
-	char* buffer = new char[bufferLength + 1]; // +1 чтобы разрешить завершение '/ 0'
+	char* buffer = new char[bufferLength + 1]; // +1 чтобы разрешить завершение '/0'
 	buffer[bufferLength] = '\0';
 
 	int returnCheck = recv(ServerConnection, buffer, bufferLength, NULL);
@@ -254,8 +237,8 @@ bool Client::GetString(std::string& value)
 
 	return true;
 }
-bool Client::SendBool(bool value)
-{
+
+bool Client::SendBool(bool value) { // отправляет булевые значения для обработки
 	int returnCheck = send(ServerConnection, (char*)& value, sizeof(bool), NULL);
 	if (returnCheck == SOCKET_ERROR)
 		return false; 
@@ -263,8 +246,7 @@ bool Client::SendBool(bool value)
 	return true; 
 }
 
-bool Client::GetBool(bool& value)
-{
+bool Client::GetBool(bool& value) { // получает булевые значения для обработки
 	int returnCheck = recv(ServerConnection, (char*)& value, sizeof(bool), NULL);
 	if (returnCheck == SOCKET_ERROR)
 		return false;
@@ -272,14 +254,12 @@ bool Client::GetBool(bool& value)
 	return true;
 }
 
-bool Client::CloseConnection()
-{
-	if (closesocket(ServerConnection == SOCKET_ERROR))
-	{
+bool Client::CloseConnection() { // закрывает соединение
+	if (closesocket(ServerConnection == SOCKET_ERROR)) {
 		if (WSAGetLastError() == WSAENOTSOCK)
 			return true;
 
-		print_error("Неудалось закрыть сокет", false);
+		PrintError("Неудалось закрыть сокет", false);
 		return false;
 	}
 

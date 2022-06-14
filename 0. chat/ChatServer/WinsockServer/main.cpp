@@ -18,8 +18,7 @@
 #define DEFAULT_PORT 27015
 
 
-int main(void)
-{
+int main() {
   SetConsoleCP(1251);
   SetConsoleOutputCP(1251);
 
@@ -39,8 +38,7 @@ int main(void)
   std::cout << ">---------------------------------------------------------------<" << std::endl;
   std::cout << "                                                                 " << std::endl;
 
-	for (int i = 0; i < 100; i++)
-	{
+	for (int i = 0; i < 100; i++) {
 		server.ListenForNewConnection();
 	}
 

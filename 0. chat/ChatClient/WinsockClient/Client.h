@@ -13,14 +13,23 @@
 #include <string>
 #include <thread>
 
-enum PACKET { P_ChatMessage, P_DirectMessage };
+const std::string CurrentTime();
+void SetFontColor(size_t c);
+void PrintError(std::string text, bool critical);
+int CleanupList(bool status);
 
-class Client
-{
+enum PACKET { 
+	P_ChatMessage, 
+	P_DirectMessage 
+};
+
+class Client {
 public:
 	Client(int argc, char **argv, int PORT);
 
-	inline void StartSubRoutine() { clientThread = std::thread(ClientHandler); }
+	inline void StartSubRoutine() { 
+		clientThread = std::thread(ClientHandler); 
+	}
 	
 	bool Connect();
 	bool SendString(const std::string& value);

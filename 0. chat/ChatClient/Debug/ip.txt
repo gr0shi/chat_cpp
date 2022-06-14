@@ -1,4 +1,5 @@
 127.0.0.1
-168.168.1.7
+192.168.1.7
+localhost
 
 in cmd - ipconfig / IPv4

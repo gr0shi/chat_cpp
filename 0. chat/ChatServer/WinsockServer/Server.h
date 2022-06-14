@@ -14,14 +14,17 @@
 #include <thread>
 #include <stdio.h>
 
-enum PACKET
-{
+const std::string CurrentTime();
+int ListOfUsers(bool statuspm, std::string username, int countusers, int id);
+void SetFontColor(size_t c);
+void PrintError(std::string text, bool critical);
+
+enum PACKET {
 	P_ChatMessage,
 	P_DirectMessage
 };
 
-class Server
-{
+class Server {
 public:
 	Server(int PORT);
 	bool ListenForNewConnection();
