@@ -1,0 +1,4 @@
+﻿  Server.cpp
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\0. chat\ChatServer\WinsockServer\Server.cpp(39,38): warning C4267: аргумент: преобразование из "size_t" в "WORD"; возможна потеря данных
+C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\0. chat\ChatServer\WinsockServer\Server.cpp(280,25): warning C4018: <: несоответствие типов со знаком и без знака
+  WinsockServer.vcxproj -> C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\0. chat\ChatServer\Debug\Server.exe

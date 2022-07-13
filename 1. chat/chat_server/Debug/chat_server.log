@@ -1,4 +1,0 @@
-﻿  Server.cpp
-C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\1. chat\chat_server\Server.cpp(57,38): warning C4267: аргумент: преобразование из "size_t" в "WORD"; возможна потеря данных
-C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\1. chat\chat_server\Server.cpp(262,13): warning C4326: возвращаемый тип "main" должен быть "int", а не "void"
-  chat_server.vcxproj -> C:\Users\maxjm\Desktop\c++\cursach\# my chat\chat_cpp\1. chat\chat_server\Debug\chat_server.exe
