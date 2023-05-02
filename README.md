@@ -1,2 +1,2 @@
 # chat_cpp
- chat for my course work
+ TCP chat for my course work (2 Semester)
