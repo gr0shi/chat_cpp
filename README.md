@@ -1,2 +1,3 @@
 # chat_cpp
- TCP chat for my course work (2 Semester)
+ Программирование на C++
+ TCP чат для курсовой работы (2 семестр)
